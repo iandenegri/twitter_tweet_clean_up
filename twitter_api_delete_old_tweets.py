@@ -7,7 +7,7 @@ import tweepy
 # Local file used to store private data like keys, etc.
 import twitter_config
 
-tweets_to_go_back = os.environ.get('tweets_to_go_back') if os.environ.get('tweets_to_go_back') else 100
+tweets_to_go_back = twitter_config.tweets_to_go_back
 
 if isinstance(tweets_to_go_back, str):
     tweets_to_go_back = int(tweets_to_go_back)

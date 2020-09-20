@@ -11,3 +11,5 @@ consumer_secret = os.environ.get('consumer_secret') if os.environ.get('consumer_
 access_token_key = os.environ.get('access_token_key') if os.environ.get('access_token_key') else 'TH1SNEED5T0BEREPLAC3D'
 
 access_token_secret = os.environ.get('access_token_secret') if os.environ.get('access_token_secret') else 'TH1SNEED5T0BEREPLAC3D'
+
+tweets_to_go_back = os.environ.get('tweets_to_go_back') if os.environ.get('tweets_to_go_back') else 100 
