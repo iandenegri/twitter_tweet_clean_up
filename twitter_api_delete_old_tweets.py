@@ -7,6 +7,11 @@ import tweepy
 # Local file used to store private data like keys, etc.
 import twitter_config
 
+tweets_to_go_back = os.environ.get('tweets_to_go_back') if os.environ.get('tweets_to_go_back') else 100
+
+if isinstance(tweets_to_go_back, str):
+    tweets_to_go_back = int(tweets_to_go_back)
+
 
 class TwitterCleanUp:
 
@@ -16,7 +21,7 @@ class TwitterCleanUp:
         self.auth.set_access_token(twitter_config.access_token_key, twitter_config.access_token_secret)
         self.api = tweepy.API(self.auth)
         # Script set up
-        self.days_to_go_back = tweets_to_go_back
+        self.tweets_to_go_back = tweets_to_go_back
         self.account_user_name = account_user_name
         self.old_tweets = 0
         self.newer_tweets = 0
@@ -33,7 +38,7 @@ class TwitterCleanUp:
 
     def fetch_tweets(self):
         # Fetch the tweets we will be iterating over
-        self.public_tweets = self.api.user_timeline(count=self.days_to_go_back)
+        self.public_tweets = self.api.user_timeline(count=self.tweets_to_go_back)
 
 
     def tweet_clean_up(self):
@@ -94,5 +99,5 @@ class TwitterCleanUp:
             return False
         return True
 
-script = TwitterCleanUp(200, 'taiyoushounen')
+script = TwitterCleanUp(tweets_to_go_back, 'taiyoushounen')
 script.execute()
