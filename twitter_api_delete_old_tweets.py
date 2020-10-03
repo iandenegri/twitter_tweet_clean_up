@@ -73,8 +73,7 @@ class TwitterCleanUp:
                     print("Well, someone interacted with this tweet or it IS interaction, might as well keep it :-)")
                 else:
                     # If it's my own and has no interactions then delete it
-                    # self.api.destroy_status(id=tweet.id)
-                    pass
+                    self.api.destroy_status(id=tweet.id)
                 self.old_tweets += 1
 
 
