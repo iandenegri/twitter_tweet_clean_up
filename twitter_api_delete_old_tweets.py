@@ -25,6 +25,7 @@ class TwitterCleanUp:
         self.account_user_name = account_user_name
         self.old_tweets = 0
         self.newer_tweets = 0
+        self.age_limit_for_retweet = 1  # This is in days
 
 
     def execute(self):
@@ -43,60 +44,18 @@ class TwitterCleanUp:
 
     def tweet_clean_up(self):
         # Iterate through grabbed tweets
-        for tweet in self.public_tweets:
-            # # debug help
-            # print(dir(tweet))
-            # for attrib in tweet.__dict__:
-            #     print(attrib)
-            # print(type(tweet._json))
-            # print(type(json.dumps(tweet._json)))
-            # json_str = json.dumps(tweet._json)
-            # print(json_str)
-            # print("\n\n\n\n\n")    
-            
+        for tweet in self.public_tweets:            
             # Determine the age of the tweet
             tweet_age = (datetime.utcnow() - tweet.created_at).days
             # Do logic based on tweet age.
-            if tweet_age < 3:
+            if tweet_age < self.age_limit_for_retweet:
                 print("This tweet is new and doesn't need to be purged. >:)")
                 self.newer_tweets += 1
-            elif tweet_age > 3 and tweet_age < 30:
-                # This tweet is middle aged. My tweets will always stay but if it's a retweet that's not mine, kill it.
-                print("Wow, this is middle aged. It can stay if it belongs to me or is a retweet of myself but otherwise it needs to go.")
-                self.old_tweets += 1
-                if tweet.retweeted == True:
-                    self.api.unretweet(id=tweet.id)
-            else:
-                # These tweets are old. If they're not interacted with just delete them...
-                print("wow this tweet is ancient!")
-                if self.tweet_interaction_checker(tweet):
-                    print("Well, someone interacted with this tweet or it IS interaction, might as well keep it :-)")
-                else:
-                    # If it's my own and has no interactions then delete it
-                    self.api.destroy_status(id=tweet.id)
-                self.old_tweets += 1
-
-
-    def tweet_interaction_checker(self, tweet):
-        """
-        Checks to see if the tweet has had any interaction with it.
-        Returns True if someone it's in response to someone's tweet, mentions other users, has retweets or has likes.
-        If none of those conditions are met then it returns False.
-        """
-        if not isinstance(tweet, Status):
-            print("Please only use tweets from the Tweepy Python package with this function.")
-            return False
-        elif not tweet.in_reply_to_status_id:
-            return False
-        elif not tweet.in_reply_to_user_id:
-            return False    
-        elif not tweet.in_reply_to_screen_name:
-            return False
-        elif tweet.retweet_count == 0:
-            return False
-        elif tweet.favorite_count == 0:
-            return False
-        return True
+                continue
+            elif tweet_age > 3 and tweet.retweeted == True:
+                # If the tweet is older than 3 days old and it's a retweeted tweet, get rid of it (-:s
+                self.api.unretweet(id=tweet.id)
+                continue
 
 script = TwitterCleanUp(tweets_to_go_back, 'taiyoushounen')
 script.execute()
